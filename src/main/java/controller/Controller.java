@@ -1,33 +1,57 @@
 package controller;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import model.DAO;
+import model.JavaBeans;
 
-/**
- * Servlet implementation class Controller
- */
-@WebServlet(urlPatterns={"/Controller","/main"})
+@WebServlet(urlPatterns = { "/Controller", "/main", "/insert" })
 public class Controller extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public Controller() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
+	DAO dao = new DAO();
+	JavaBeans contato = new JavaBeans();
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		response.getWriter().append("Served at: ").append(request.getContextPath());
+	public Controller() {
+		super();
+	}
+
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		String action = request.getServletPath();
+		System.out.println(action);
+		if (action.equals("/main")) {
+			contatos(request, response);
+		} else if (action.equals("/insert")) {
+			novoContato(request, response);
+		} else {
+			response.sendRedirect("index.html");
+		}
+	}
+
+	// listar contatos
+	protected void contatos(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		ArrayList<JavaBeans> lista = dao.listarContatos();
+		
+		
+	}
+
+	protected void novoContato(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		// setar variaveis
+		contato.setNome(request.getParameter("nome"));
+		contato.setPhone(request.getParameter("phone"));
+		contato.setEmail(request.getParameter("email"));
+		// invocar o metodo inserir contato
+		dao.inserirContato(contato);
+		response.sendRedirect("main");
 	}
 
 }
